@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Tarefas</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Gerenciador de Tarefas</h1>
+        </header>
+
+        <div class="filters">
+            <h3>Filtrar por status:</h3>
+            <div class="filter-options">
+                <button class="filter-btn active" data-status="todos">Todos</button>
+                <button class="filter-btn" data-status="pendente">Pendente</button>
+                <button class="filter-btn" data-status="em_andamento">Em andamento</button>
+                <button class="filter-btn" data-status="concluida">Concluída</button>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <h2 id="form-title">Nova Tarefa</h2>
+            <form id="task-form">
+                <input type="hidden" id="task-id">
+                <div class="form-group">
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" required>
+                </div>
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status">
+                        <option value="pendente">Pendente</option>
+                        <option value="em_andamento">Em andamento</option>
+                        <option value="concluida">Concluída</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="prioridade">Prioridade:</label>
+                    <select id="prioridade">
+                        <option value="baixa">Baixa</option>
+                        <option value="media" selected>Média</option>
+                        <option value="alta">Alta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="data_vencimento">Data de Vencimento:</label>
+                    <input type="date" id="data_vencimento">
+                </div>
+                <div class="form-actions">
+                    <button type="submit" id="save-btn">Salvar</button>
+                    <button type="button" id="cancel-btn">Cancelar</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="tasks-container">
+            <h2>Tarefas</h2>
+            <button id="new-task-btn">Nova Tarefa</button>
+            <div id="tasks-list">
+                <!-- As tarefas serão carregadas aqui via JavaScript -->
+                <p id="loading-message">Carregando tarefas...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

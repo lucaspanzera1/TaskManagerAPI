@@ -16,6 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rota base da API
 app.use('/api', routes);
+// Habilitar CORS
+app.use(cors());
 
 // Rota raiz
 app.get('/', (req, res) => {
