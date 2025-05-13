@@ -5,70 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
     <link rel="stylesheet" href="css/styles.css">
-
-
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Gerenciador de Tarefas</h1>
+            <h1><i class="fas fa-tasks"></i> Gerenciador de Tarefas</h1>
         </header>
 
-        <div class="filters">
-            <h3>Filtrar por status:</h3>
-            <div class="filter-options">
-                <button class="filter-btn active" data-status="todos">Todos</button>
-                <button class="filter-btn" data-status="pendente">Pendente</button>
-                <button class="filter-btn" data-status="em_andamento">Em andamento</button>
-                <button class="filter-btn" data-status="concluida">Concluída</button>
+        <div class="app-content">
+            <div class="filters">
+                <h3><i class="fas fa-filter"></i> Filtrar por status:</h3>
+                <div class="filter-options">
+                    <button class="filter-btn active" data-status="todos">
+                        <i class="fas fa-list"></i> Todos
+                    </button>
+                    <button class="filter-btn" data-status="pendente">
+                        <i class="fas fa-clock"></i> Pendente
+                    </button>
+                    <button class="filter-btn" data-status="em_andamento">
+                        <i class="fas fa-spinner"></i> Em andamento
+                    </button>
+                    <button class="filter-btn" data-status="concluida">
+                        <i class="fas fa-check-circle"></i> Concluída
+                    </button>
+                </div>
             </div>
-        </div>
 
-        <div class="form-container">
-            <h2 id="form-title">Nova Tarefa</h2>
-            <form id="task-form">
-                <input type="hidden" id="task-id">
-                <div class="form-group">
-                    <label for="titulo">Título:</label>
-                    <input type="text" id="titulo" required>
-                </div>
-                <div class="form-group">
-                    <label for="descricao">Descrição:</label>
-                    <textarea id="descricao" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="status">Status:</label>
-                    <select id="status">
-                        <option value="pendente">Pendente</option>
-                        <option value="em_andamento">Em andamento</option>
-                        <option value="concluida">Concluída</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="prioridade">Prioridade:</label>
-                    <select id="prioridade">
-                        <option value="baixa">Baixa</option>
-                        <option value="media" selected>Média</option>
-                        <option value="alta">Alta</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="data_vencimento">Data de Vencimento:</label>
-                    <input type="date" id="data_vencimento">
-                </div>
-                <div class="form-actions">
-                    <button type="submit" id="save-btn">Salvar</button>
-                    <button type="button" id="cancel-btn">Cancelar</button>
-                </div>
-            </form>
-        </div>
+            <div class="form-container">
+                <h2 id="form-title">Nova Tarefa</h2>
+                <form id="task-form">
+                    <input type="hidden" id="task-id">
+                    <div class="form-group">
+                        <label for="titulo"><i class="fas fa-heading"></i> Título:</label>
+                        <input type="text" id="titulo" placeholder="Digite o título da tarefa" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="descricao"><i class="fas fa-align-left"></i> Descrição:</label>
+                        <textarea id="descricao" rows="3" placeholder="Descreva detalhes da tarefa"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status"><i class="fas fa-tasks"></i> Status:</label>
+                        <select id="status">
+                            <option value="pendente">Pendente</option>
+                            <option value="em_andamento">Em andamento</option>
+                            <option value="concluida">Concluída</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prioridade"><i class="fas fa-flag"></i> Prioridade:</label>
+                        <select id="prioridade">
+                            <option value="baixa">Baixa</option>
+                            <option value="media" selected>Média</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="data_vencimento"><i class="fas fa-calendar-alt"></i> Data de Vencimento:</label>
+                        <input type="date" id="data_vencimento">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="save-btn">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button type="button" id="cancel-btn">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
 
-        <div class="tasks-container">
-            <h2>Tarefas</h2>
-            <button id="new-task-btn">Nova Tarefa</button>
-            <div id="tasks-list">
-                <!-- As tarefas serão carregadas aqui via JavaScript -->
-                <p id="loading-message">Carregando tarefas...</p>
+            <div class="tasks-container">
+                <div class="tasks-header">
+                    <h2><i class="fas fa-clipboard-list"></i> Minhas Tarefas</h2>
+                    <button id="new-task-btn">
+                        <i class="fas fa-plus"></i> Nova Tarefa
+                    </button>
+                </div>
+                <div id="tasks-list">
+                    <!-- As tarefas serão carregadas aqui via JavaScript -->
+                    <p id="loading-message"><i class="fas fa-spinner fa-spin"></i> Carregando tarefas...</p>
+                </div>
             </div>
         </div>
     </div>
