@@ -9,8 +9,9 @@ API RESTful para gerenciamento de tarefas construída com Node.js e Supabase.
 - Supabase (Banco de dados PostgreSQL)
 - Joi (Validação)
 - Dotenv (Variáveis de ambiente)
+- Frontend HTML/CSS/JavaScript vanilla
 
-## Configuração
+## Configuração do Backend
 
 ### 1. Clone o repositório
 
@@ -61,7 +62,29 @@ SUPABASE_KEY=sua_chave_do_supabase
 PORT=3000
 ```
 
-### 5. Inicie o servidor
+### 5. Configure o CORS para o Frontend
+
+Instale o pacote CORS se ainda não estiver instalado:
+
+```bash
+npm install cors
+```
+
+Adicione o middleware CORS ao seu servidor:
+
+```javascript
+// No arquivo server.js
+const express = require('express');
+const cors = require('cors');
+const app = express();
+
+// Habilitar CORS
+app.use(cors());
+
+// Resto do seu código...
+```
+
+### 6. Inicie o servidor
 
 ```bash
 # Modo desenvolvimento
@@ -70,6 +93,66 @@ npm run dev
 # Modo produção
 npm start
 ```
+
+## Configuração do Frontend
+
+### 1. Estrutura de Arquivos
+
+Crie a seguinte estrutura de pastas dentro do projeto:
+
+```
+frontend/
+├── css/
+│   └── style.css
+├── js/
+│   └── app.js
+└── index.html
+```
+
+### 2. Implementação dos Arquivos
+
+Copie o código de cada arquivo conforme especificado abaixo:
+
+#### index.html
+Arquivo HTML principal com a estrutura da interface do usuário.
+
+#### style.css
+Estilos CSS para todos os componentes da interface.
+
+#### app.js
+Código JavaScript para gerenciar a comunicação com a API e manipulação da interface.
+
+### 3. Executando o Frontend
+
+1. Certifique-se de que o backend esteja rodando
+2. Abra o arquivo `index.html` no navegador
+   - Para desenvolvimento, recomenda-se usar o Live Server do VSCode ou similar
+
+## Funcionalidades do Frontend
+
+### 1. Visualização de Tarefas
+- Lista todas as tarefas cadastradas
+- Exibe detalhes como título, descrição, status, prioridade e data de vencimento
+- Cada tarefa é representada por um card com ações de editar e excluir
+
+### 2. Filtragem por Status
+- Permite filtrar tarefas por status (todos, pendente, em andamento, concluída)
+- Os filtros são botões na parte superior da interface
+
+### 3. Criação de Tarefas
+- Formulário com campos para todos os atributos necessários
+- Validação básica dos campos obrigatórios
+- Feedback de sucesso/erro ao usuário
+
+### 4. Edição de Tarefas
+- Carrega os dados da tarefa selecionada no formulário
+- Permite modificar qualquer atributo
+- Atualiza a visualização após salvar as alterações
+
+### 5. Exclusão de Tarefas
+- Confirmação antes da exclusão
+- Remove a tarefa da visualização após confirmação
+- Feedback de sucesso/erro ao usuário
 
 ## Testando a API com Postman
 
@@ -197,6 +280,33 @@ npm start
 8. Execute a requisição #6 para excluir a tarefa
 9. Execute a requisição #2 para confirmar que a tarefa foi removida
 
+## Fluxo de Teste do Frontend
+
+1. Inicie o servidor backend com `npm run dev`
+2. Abra o arquivo `frontend/index.html` em um navegador
+3. Teste as funcionalidades:
+   - Crie uma nova tarefa preenchendo o formulário e clicando em "Salvar"
+   - Verifique se a tarefa aparece na lista
+   - Filtre as tarefas por status usando os botões de filtro
+   - Edite uma tarefa clicando no botão "Editar", modificando os campos e salvando
+   - Exclua uma tarefa clicando no botão "Excluir" e confirmando a ação
+
+## Possíveis Melhorias
+
+### Backend
+- Implementar autenticação de usuários
+- Adicionar paginação para listar tarefas
+- Implementar busca por texto nas tarefas
+- Adicionar testes automatizados
+
+### Frontend
+- Adicionar paginação para lidar com muitas tarefas
+- Implementar sistema de login/autenticação
+- Adicionar campo de busca para encontrar tarefas específicas
+- Permitir ordenação das tarefas por diferentes critérios
+- Melhorar responsividade para dispositivos móveis
+- Adicionar animações e transições para melhorar UX
+
 ## Estrutura do Projeto
 
 ```
@@ -213,11 +323,31 @@ npm start
 │   ├── validations/
 │   │   └── tarefaValidation.js
 │   └── server.js
+├── frontend/
+│   ├── css/
+│   │   └── style.css
+│   ├── js/
+│   │   └── app.js
+│   └── index.html
 ├── .env
 ├── .env.example
 ├── package.json
 └── README.md
 ```
+
+## Solução de Problemas Comuns
+
+### CORS não configurado
+Se você encontrar erros relacionados ao CORS ao tentar acessar a API pelo frontend, certifique-se de ter configurado corretamente o middleware CORS no backend.
+
+### API não responde
+Verifique se o servidor está em execução e se a porta configurada no frontend (`app.js`) corresponde à porta onde o servidor está escutando.
+
+### Formulário não envia
+Verifique os logs do console do navegador para identificar possíveis erros. Certifique-se de que todos os campos obrigatórios estão preenchidos.
+
+### Dados não são exibidos
+Confirme se a URL da API está correta no arquivo `app.js` e se o formato dos dados retornados pela API corresponde ao esperado pelo frontend.
 
 ## Licença
 
