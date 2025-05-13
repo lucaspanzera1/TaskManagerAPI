@@ -1,0 +1,30 @@
+{
+  "name": "tarefas-api",
+  "version": "1.0.0",
+  "description": "API de gerenciamento de tarefas com Node.js e Supabase",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "api",
+    "tarefas",
+    "nodejs",
+    "supabase"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.0",
+    "express": "^4.18.2",
+    "joi": "^17.12.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3"
+  }
+}
