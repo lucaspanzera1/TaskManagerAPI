@@ -16,8 +16,8 @@ API RESTful para gerenciamento de tarefas construída com Node.js e Supabase.
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/lucaspanzera1/task-manager.git
-cd task-manager
+git clone https://github.com/lucaspanzera1/TaskManagerAPI.git
+cd TaskManagerAPI
 ```
 
 ### 2. Instale as dependências
@@ -182,10 +182,11 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 - **Descrição**: Realizar login na API e obter Token de verificacao
 - **Body** (raw JSON):
   ```json
-{
+  {
   "username": "admin",
   "password": "senha"
- }
+  }
+  ```
 - **Resposta esperada** (status 201):
   ```json
   {
@@ -292,7 +293,8 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 ### Fluxo de Teste Completo
 
 1. Inicie o servidor com `npm run dev`
-2. Execute a requisição #1 para verificar se a API está online
+2. Execute a requisição #0 para verificar se a API está online
+3. Execute a requisição #1 para receber o Token da API
 3. Execute a requisição #4 para criar uma nova tarefa (guarde o ID retornado)
 4. Execute a requisição #2 para listar todas as tarefas e confirmar que sua tarefa foi criada
 5. Execute a requisição #3 com o ID da tarefa criada para obter detalhes específicos
