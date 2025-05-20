@@ -164,7 +164,7 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 
 ### Requisições para Teste
 
-#### 1. Verificar Status da API
+#### 0. Verificar Status da API
 - **Método**: GET
 - **URL**: `http://localhost:3000/`
 - **Descrição**: Verifica se a API está online
@@ -176,11 +176,28 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
     "status": "online"
   }
   ```
+### 1. Login e Obter Token
+- **Método**: POST
+- **URL**: `http://localhost:3000/api/login`
+- **Descrição**: Realizar login na API e obter Token de verificacao
+- **Body** (raw JSON):
+  ```json
+{
+  "username": "admin",
+  "password": "senha"
+ }
+- **Resposta esperada** (status 201):
+  ```json
+  {
+  "token": "eyJhbGciOiJIUzI1NiIsInR..."
+  }
+  ```
 
 #### 2. Listar Todas as Tarefas
 - **Método**: GET
 - **URL**: `http://localhost:3000/api/tarefas`
 - **Descrição**: Retorna todas as tarefas cadastradas
+- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Parâmetros opcionais**:
   - `status` (query): Filtrar por status (pendente, em_andamento, concluida)
   - Exemplo: `http://localhost:3000/api/tarefas?status=pendente`
@@ -189,11 +206,13 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 - **Método**: GET
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
 - **Descrição**: Retorna uma tarefa específica pelo ID
+- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Exemplo**: `http://localhost:3000/api/tarefas/550e8400-e29b-41d4-a716-446655440000`
 
 #### 4. Criar Nova Tarefa
 - **Método**: POST
 - **URL**: `http://localhost:3000/api/tarefas`
+- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Headers**: 
   - `Content-Type: application/json`
 - **Body** (raw JSON):
@@ -226,6 +245,7 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 #### 5. Atualizar Tarefa Existente
 - **Método**: PUT
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
+- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Headers**: 
   - `Content-Type: application/json`
 - **Body** (raw JSON):
@@ -259,6 +279,7 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 #### 6. Excluir Tarefa
 - **Método**: DELETE
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
+- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Descrição**: Remove uma tarefa específica pelo ID
 - **Resposta esperada** (status 200):
   ```json

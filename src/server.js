@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import routes from './routes/index.js';
+import authRoutes from './routes/auth.js';
 
 // Carrega variáveis de ambiente
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 // Rota base da API
 app.use('/api', routes);
 // Habilitar CORS
+app.use('/api', authRoutes);
 app.use(cors());
 
 // Rota raiz
