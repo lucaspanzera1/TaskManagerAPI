@@ -1,11 +1,10 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const router = express.Router();
 
+const router = express.Router();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 router.post('/signup', async (req, res) => {
@@ -36,7 +35,7 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // 1. Buscar email associado ao username
+  // Buscar email no Supabase pela tabela profiles
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('email')
@@ -44,16 +43,18 @@ router.post('/login', async (req, res) => {
     .single();
 
   if (profileError || !profile) {
+    console.error('Erro ao buscar perfil:', profileError);
     return res.status(400).json({ error: 'Usuário não encontrado' });
   }
 
-  // 2. Fazer login com email + senha
+  // Fazer login usando o e-mail recuperado
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
     email: profile.email,
     password
   });
 
   if (loginError) {
+    console.error('Erro ao fazer login:', loginError);
     return res.status(401).json({ error: 'Credenciais inválidas' });
   }
 
@@ -62,7 +63,6 @@ router.post('/login', async (req, res) => {
     user: loginData.user
   });
 });
-
 
 
 export default router;
