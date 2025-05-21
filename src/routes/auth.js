@@ -23,9 +23,10 @@ router.post('/signup', async (req, res) => {
 
   // 2. Cria o profile com username
   const { error: profileError } = await supabase.from('profiles').insert({
-    id: user.id,
-    username
-  });
+  id: user.id,
+  username,
+  email
+});
 
   if (profileError) return res.status(400).json({ error: profileError.message });
 
@@ -36,27 +37,32 @@ router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
   // 1. Buscar email associado ao username
-  const { data, error } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from('profiles')
-    .select('id')
+    .select('email')
     .eq('username', username)
     .single();
 
-  if (error || !data) return res.status(400).json({ error: 'Usuário não encontrado' });
+  if (profileError || !profile) {
+    return res.status(400).json({ error: 'Usuário não encontrado' });
+  }
 
-  // 2. Fazer login via Supabase Auth
+  // 2. Fazer login com email + senha
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-    email: data.id, // porque no Supabase o id do usuário é o email
+    email: profile.email,
     password
   });
 
-  if (loginError) return res.status(401).json({ error: 'Credenciais inválidas' });
+  if (loginError) {
+    return res.status(401).json({ error: 'Credenciais inválidas' });
+  }
 
   res.json({
     token: loginData.session.access_token,
     user: loginData.user
   });
 });
+
 
 
 export default router;
