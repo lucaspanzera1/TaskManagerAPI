@@ -1,20 +1,21 @@
-import jwt from 'jsonwebtoken';
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
 
-export function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+dotenv.config();
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res.status(401).json({ message: 'Token não fornecido' });
-  }
+export async function authMiddleware(req, res, next) {
+  const token = req.headers.authorization?.split(' ')[1];
 
-  const token = authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ message: 'Token não fornecido' });
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
+  const { data, error } = await supabase.auth.getUser(token);
+
+  if (error || !data.user) {
     return res.status(401).json({ message: 'Token inválido' });
   }
+
+  req.user = data.user;
+  next();
 }
-;
+
