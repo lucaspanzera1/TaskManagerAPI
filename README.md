@@ -183,32 +183,74 @@ frontend/
 └── index.html
 ```
 
-### 2. Implementação dos Arquivos
+### 2. Estrutura Atualizada com Autenticação
+
+Crie a seguinte estrutura de pastas dentro do projeto:
+
+```
+frontend/
+├── css/
+│   └── styles.css
+├── js/
+│   └── app.js
+├── index.html     ← Página principal (protegida)
+└── auth.html      ← Nova página de login/registro
+```
+
+### 3. Implementação dos Arquivos
 
 Copie o código de cada arquivo conforme especificado abaixo:
 
-#### index.html
-Arquivo HTML principal com a estrutura da interface do usuário, incluindo formulários de login e cadastro.
+#### auth.html
+Nova página que contém duas abas:
+- **Login**: realiza autenticação via Supabase com `username` e `senha`
+- **Registro**: cria novo usuário na Supabase com `username`, `email` e `senha`
 
-#### style.css
-Estilos CSS para todos os componentes da interface, incluindo elementos de autenticação.
+Ambas interagem com a API `/api/login` e `/api/signup`.
+
+#### index.html
+Arquivo HTML principal com a estrutura da interface do usuário. **Agora protegido por autenticação** com verificação automática de token no `<head>`:
+
+```html
+<script>
+  const token = localStorage.getItem('token');
+  if (!token) {
+    window.location.href = 'auth.html';
+  }
+</script>
+```
+
+Se o usuário não estiver autenticado, ele é redirecionado imediatamente para `auth.html`.
+
+#### styles.css
+Estilos CSS para todos os componentes da interface, incluindo elementos de autenticação e a nova página `auth.html`.
 
 #### app.js
-Código JavaScript para gerenciar a comunicação com a API, autenticação e manipulação da interface.
+Código JavaScript para gerenciar a comunicação com a API, autenticação e manipulação da interface. Inclui:
+- Verificação automática de token antes de cada requisição
+- Redirecionamento automático para `auth.html` em caso de token inválido (erro 401)
+- Armazenamento seguro do token JWT no `localStorage`
 
-### 3. Executando o Frontend
+### 4. Executando o Frontend
 
 1. Certifique-se de que o backend esteja rodando
-2. Abra o arquivo `index.html` no navegador
+2. Abra o arquivo `auth.html` no navegador (página inicial de login)
    - Para desenvolvimento, recomenda-se usar o Live Server do VSCode ou similar
+3. Após autenticação bem-sucedida, o usuário será redirecionado automaticamente para `index.html`
+
+**⚠️ Importante**: Agora `index.html` está protegido por autenticação. Usuários não autenticados serão automaticamente redirecionados para `auth.html`.
 
 ## Funcionalidades do Frontend
 
-### 1. Sistema de Autenticação
-- Formulário de cadastro com username, email e password
-- Formulário de login com username e password
-- Gerenciamento automático de tokens JWT
-- Redirecionamento baseado no status de autenticação
+### 1. Sistema de Autenticação Completo
+- **Página `auth.html`** com duas abas:
+  - **Login**: Formulário para entrar com username e password
+  - **Registro**: Formulário para cadastro com username, email e password
+- **Proteção automática**: `index.html` verifica autenticação antes de carregar
+- **Gerenciamento de tokens**: Armazenamento automático no `localStorage`
+- **Redirecionamento inteligente**: Usuários não autenticados são redirecionados para `auth.html`
+- **Verificação contínua**: Token validado a cada requisição à API
+- **Logout automático**: Redirecionamento em caso de token expirado (erro 401)
 
 ### 2. Visualização de Tarefas
 - Lista todas as tarefas do usuário autenticado
@@ -427,21 +469,46 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 ## Fluxo de Teste do Frontend
 
+### 1. Primeiro Acesso (Usuário Novo)
 1. Inicie o servidor backend com `npm run dev`
-2. Abra o arquivo `frontend/index.html` em um navegador
-3. Teste as funcionalidades de autenticação:
-   - Cadastre um novo usuário preenchendo o formulário de cadastro
-   - Faça login com as credenciais criadas
-   - Verifique se o token é armazenado e o usuário é redirecionado
-4. Teste as funcionalidades de tarefas:
+2. Abra o arquivo `frontend/auth.html` em um navegador
+3. **Teste de Proteção**: Tente acessar `index.html` diretamente - você será redirecionado para `auth.html`
+
+### 2. Teste de Autenticação
+4. **Cadastro**:
+   - Clique na aba "Registro"
+   - Preencha username, email e password
+   - Clique em "Cadastrar"
+   - Verifique se o usuário é criado e redirecionado para login
+   
+5. **Login**:
+   - Na aba "Login", insira username e password criados
+   - Clique em "Entrar"
+   - Verifique se o token é armazenado e o usuário é redirecionado para `index.html`
+
+### 3. Teste de Funcionalidades de Tarefas
+6. Agora em `index.html` (autenticado):
    - Crie uma nova tarefa preenchendo o formulário e clicando em "Salvar"
    - Verifique se a tarefa aparece na lista
    - Filtre as tarefas por status usando os botões de filtro
    - Edite uma tarefa clicando no botão "Editar", modificando os campos e salvando
    - Exclua uma tarefa clicando no botão "Excluir" e confirmando a ação
-5. Teste o logout:
+
+### 4. Teste de Segurança
+7. **Teste de Token Expirado**:
+   - Limpe o localStorage no navegador (F12 > Application > Local Storage)
+   - Recarregue `index.html` - você será redirecionado para `auth.html`
+   
+8. **Teste de Logout** (se implementado):
    - Clique no botão de logout
-   - Verifique se o token é removido e o usuário é redirecionado para a tela de login
+   - Verifique se o token é removido e o usuário é redirecionado para `auth.html`
+
+### 5. Fluxo Completo de Validação
+- ✅ Usuários não autenticados não conseguem acessar `index.html`
+- ✅ Login e registro funcionam com a API de autenticação
+- ✅ O frontend está completamente integrado com autenticação Supabase
+- ✅ Tokens são gerenciados automaticamente
+- ✅ Redirecionamento automático funciona corretamente
 
 ## Possíveis Melhorias
 
@@ -455,6 +522,9 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 - Implementar recuperação de senha
 
 ### Frontend
+- **Implementar funcionalidades de logout**: Adicionar botão de logout no `index.html`
+- **Expiração automática de token**: Implementar verificação periódica de validade
+- **Exibir informações do usuário**: Mostrar nome do usuário logado na interface
 - Adicionar paginação para lidar com muitas tarefas
 - Implementar sistema de recuperação de senha
 - Adicionar campo de busca para encontrar tarefas específicas
@@ -514,7 +584,22 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 - Verifique se o token está sendo enviado corretamente no cabeçalho Authorization.
 - Confirme se o formato é: `Bearer <token>`.
 
-### Problemas Gerais
+#### Problemas com Autenticação no Frontend
+
+**Usuário não consegue acessar index.html**
+- Verifique se existe um token válido no localStorage do navegador
+- Confirme se o usuário fez login corretamente em `auth.html`
+- Teste se a API de autenticação está respondendo corretamente
+
+**Redirecionamento não funciona**
+- Verifique se os arquivos `auth.html` e `index.html` estão no mesmo diretório
+- Confirme se o JavaScript de proteção está no `<head>` de `index.html`
+- Teste se o localStorage está habilitado no navegador
+
+**Formulários de login/registro não funcionam**
+- Verifique os logs do console para erros JavaScript
+- Confirme se as URLs da API estão corretas no `app.js`
+- Teste se o backend de autenticação está rodando
 
 #### CORS não configurado
 Se você encontrar erros relacionados ao CORS ao tentar acessar a API pelo frontend, certifique-se de ter configurado corretamente o middleware CORS no backend.

@@ -15,7 +15,25 @@ const saveBtn = document.getElementById('save-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const newTaskBtn = document.getElementById('new-task-btn');
 const filterBtns = document.querySelectorAll('.filter-btn');
+// No início do app.js
 const token = localStorage.getItem('token');
+if (!token) {
+  window.location.href = 'auth.html';
+}
+
+// Reforçar checagem no loadTasks ou outra função
+fetch(API_URL, {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+})
+.then(res => {
+  if (res.status === 401) {
+    localStorage.removeItem('token');
+    window.location.href = 'auth.html';
+  }
+});
+
 
 async function loadTasks() {
   try {
