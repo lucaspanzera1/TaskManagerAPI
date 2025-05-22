@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Autenticação</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .tabs { display: flex; margin-bottom: 1rem; }
+    .tabs button { flex: 1; padding: 10px; cursor: pointer; }
+    .tabs button.active { font-weight: bold; background-color: #eee; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    form input, form button { display: block; width: 100%; margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Autenticação</h1>
+    
+    <div class="tabs">
+      <button id="login-tab" class="active">Login</button>
+      <button id="register-tab">Registrar</button>
+    </div>
+
+    <div id="login-content" class="tab-content active">
+      <form id="login-form">
+        <input type="text" id="login-username" placeholder="Usuário" required />
+        <input type="password" id="login-password" placeholder="Senha" required />
+        <button type="submit">Entrar</button>
+      </form>
+    </div>
+
+    <div id="register-content" class="tab-content">
+      <form id="register-form">
+        <input type="text" id="register-username" placeholder="Usuário" required />
+        <input type="email" id="register-email" placeholder="Email" required />
+        <input type="password" id="register-password" placeholder="Senha" required />
+        <button type="submit">Registrar</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+</body>
+</html>
+

@@ -15,6 +15,38 @@ const saveBtn = document.getElementById('save-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const newTaskBtn = document.getElementById('new-task-btn');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const token = localStorage.getItem('token');
+
+async function loadTasks() {
+  try {
+    showLoading(true);
+
+    const response = await fetch(API_URL, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        alert('Sessão expirada. Faça login novamente.');
+        localStorage.removeItem('token');
+        window.location.href = 'auth.html';
+      }
+      throw new Error('Erro ao carregar tarefas');
+    }
+
+    const data = await response.json();
+    tasks = data.data || [];
+    renderTasks(tasks);
+  } catch (error) {
+    console.error('Erro:', error);
+    showError(error.message);
+  } finally {
+    showLoading(false);
+  }
+}
+
 
 // Estado da aplicação
 let currentFilter = 'todos';
