@@ -1,12 +1,12 @@
 # API de Gerenciamento de Tarefas
 
-API RESTful para gerenciamento de tarefas construída com Node.js e Supabase.
+API RESTful para gerenciamento de tarefas construída com Node.js e Supabase, incluindo sistema completo de autenticação.
 
 ## Tecnologias
 
 - Node.js
 - Express
-- Supabase (Banco de dados PostgreSQL)
+- Supabase (Banco de dados PostgreSQL + Auth)
 - Joi (Validação)
 - Dotenv (Variáveis de ambiente)
 - Frontend HTML/CSS/JavaScript vanilla
@@ -30,11 +30,13 @@ npm install
 
 1. Crie uma conta no [Supabase](https://supabase.com/)
 2. Crie um novo projeto
-3. No SQL Editor, crie a tabela `tarefas` com o seguinte SQL:
+3. No SQL Editor, crie as tabelas necessárias com o seguinte SQL:
 
 ```sql
+-- Tabela de tarefas
 CREATE TABLE tarefas (
   id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
   titulo TEXT NOT NULL,
   descricao TEXT,
   status TEXT NOT NULL DEFAULT 'pendente',
@@ -44,13 +46,52 @@ CREATE TABLE tarefas (
   updated_at TIMESTAMP WITH TIME ZONE
 );
 
--- Adicione alguns índices para melhorar a performance
+-- Tabela de perfis de usuários
+CREATE TABLE profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  username TEXT UNIQUE NOT NULL,
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices para melhorar a performance
 CREATE INDEX idx_tarefas_status ON tarefas(status);
 CREATE INDEX idx_tarefas_prioridade ON tarefas(prioridade);
 CREATE INDEX idx_tarefas_data_vencimento ON tarefas(data_vencimento);
+CREATE INDEX idx_tarefas_user_id ON tarefas(user_id);
+CREATE INDEX idx_profiles_username ON profiles(username);
+CREATE INDEX idx_profiles_email ON profiles(email);
 ```
 
-4. Copie a URL e a Chave da API do seu projeto Supabase
+4. Configure as políticas RLS (Row Level Security):
+
+```sql
+-- Habilitar RLS nas tabelas
+ALTER TABLE tarefas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para tarefas - usuário só pode ver suas próprias tarefas
+CREATE POLICY "Usuários podem ver suas próprias tarefas" ON tarefas
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuários podem inserir suas próprias tarefas" ON tarefas
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Usuários podem atualizar suas próprias tarefas" ON tarefas
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Usuários podem deletar suas próprias tarefas" ON tarefas
+  FOR DELETE USING (auth.uid() = user_id);
+
+-- Políticas para profiles
+CREATE POLICY "Usuários podem ver seu próprio perfil" ON profiles
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Usuários podem inserir seu próprio perfil" ON profiles
+  FOR INSERT WITH CHECK (auth.uid() = id);
+```
+
+5. Copie a URL e a Chave da API do seu projeto Supabase
 
 ### 4. Configure as Variáveis de Ambiente
 
@@ -84,7 +125,15 @@ app.use(cors());
 // Resto do seu código...
 ```
 
-### 6. Inicie o servidor
+### 6. Configuração de Autenticação no Supabase
+
+Para ambiente de desenvolvimento, desative a confirmação de e-mail:
+
+1. Acesse o painel do Supabase
+2. Vá para `Authentication > Settings`
+3. Desative "Enable email confirmations"
+
+### 7. Inicie o servidor
 
 ```bash
 # Modo desenvolvimento
@@ -93,6 +142,31 @@ npm run dev
 # Modo produção
 npm start
 ```
+
+## 🛡️ Sistema de Autenticação
+
+### Fluxo de Autenticação
+
+O projeto utiliza Supabase Auth com username, email e password. Todas as rotas da API são protegidas por autenticação JWT.
+
+#### 1. Cadastro de Usuário
+
+- Cria um novo usuário no Supabase Auth usando `email` e `password`
+- Cria um registro na tabela `profiles` associando `id`, `username` e `email`
+
+#### 2. Login de Usuário
+
+- Recebe `username` e `password`
+- Busca o e-mail correspondente na tabela `profiles`
+- Faz login usando `email + password` com Supabase Auth
+- Retorna token JWT para autenticação nas próximas requisições
+
+#### 3. Middleware de Autenticação
+
+Todas as rotas de tarefas (`/api/tarefas`) são protegidas pelo middleware `authMiddleware`, que:
+- Valida o token JWT no cabeçalho `Authorization: Bearer <token>`
+- Retorna erro `401 Unauthorized` se o token for inválido
+- Permite acesso apenas às tarefas do usuário autenticado
 
 ## Configuração do Frontend
 
@@ -114,13 +188,13 @@ frontend/
 Copie o código de cada arquivo conforme especificado abaixo:
 
 #### index.html
-Arquivo HTML principal com a estrutura da interface do usuário.
+Arquivo HTML principal com a estrutura da interface do usuário, incluindo formulários de login e cadastro.
 
 #### style.css
-Estilos CSS para todos os componentes da interface.
+Estilos CSS para todos os componentes da interface, incluindo elementos de autenticação.
 
 #### app.js
-Código JavaScript para gerenciar a comunicação com a API e manipulação da interface.
+Código JavaScript para gerenciar a comunicação com a API, autenticação e manipulação da interface.
 
 ### 3. Executando o Frontend
 
@@ -130,26 +204,32 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 
 ## Funcionalidades do Frontend
 
-### 1. Visualização de Tarefas
-- Lista todas as tarefas cadastradas
+### 1. Sistema de Autenticação
+- Formulário de cadastro com username, email e password
+- Formulário de login com username e password
+- Gerenciamento automático de tokens JWT
+- Redirecionamento baseado no status de autenticação
+
+### 2. Visualização de Tarefas
+- Lista todas as tarefas do usuário autenticado
 - Exibe detalhes como título, descrição, status, prioridade e data de vencimento
 - Cada tarefa é representada por um card com ações de editar e excluir
 
-### 2. Filtragem por Status
+### 3. Filtragem por Status
 - Permite filtrar tarefas por status (todos, pendente, em andamento, concluída)
 - Os filtros são botões na parte superior da interface
 
-### 3. Criação de Tarefas
+### 4. Criação de Tarefas
 - Formulário com campos para todos os atributos necessários
 - Validação básica dos campos obrigatórios
 - Feedback de sucesso/erro ao usuário
 
-### 4. Edição de Tarefas
+### 5. Edição de Tarefas
 - Carrega os dados da tarefa selecionada no formulário
 - Permite modificar qualquer atributo
 - Atualiza a visualização após salvar as alterações
 
-### 5. Exclusão de Tarefas
+### 6. Exclusão de Tarefas
 - Confirmação antes da exclusão
 - Remove a tarefa da visualização após confirmação
 - Feedback de sucesso/erro ao usuário
@@ -176,46 +256,83 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
     "status": "online"
   }
   ```
-### 1. Login e Obter Token
+
+#### 1. Cadastro de Usuário
 - **Método**: POST
-- **URL**: `http://localhost:3000/api/login`
-- **Descrição**: Realizar login na API e obter Token de verificacao
+- **URL**: `http://localhost:3000/api/signup`
+- **Descrição**: Cadastrar um novo usuário
+- **Headers**: 
+  - `Content-Type: application/json`
 - **Body** (raw JSON):
   ```json
   {
-  "username": "admin",
-  "password": "senha"
+    "email": "usuario@email.com",
+    "password": "123456",
+    "username": "usuario123"
   }
   ```
 - **Resposta esperada** (status 201):
   ```json
   {
-  "token": "eyJhbGciOiJIUzI1NiIsInR..."
+    "success": true,
+    "message": "Usuário cadastrado com sucesso",
+    "user": {
+      "id": "uuid...",
+      "email": "usuario@email.com",
+      "username": "usuario123"
+    }
   }
   ```
 
-#### 2. Listar Todas as Tarefas
+#### 2. Login de Usuário
+- **Método**: POST
+- **URL**: `http://localhost:3000/api/login`
+- **Descrição**: Realizar login e obter token JWT
+- **Headers**: 
+  - `Content-Type: application/json`
+- **Body** (raw JSON):
+  ```json
+  {
+    "username": "usuario123",
+    "password": "123456"
+  }
+  ```
+- **Resposta esperada** (status 200):
+  ```json
+  {
+    "token": "eyJhbGciOiJIUzI1NiIsInR...",
+    "user": {
+      "id": "uuid...",
+      "email": "usuario@email.com",
+      "username": "usuario123"
+    }
+  }
+  ```
+
+#### 3. Listar Todas as Tarefas
 - **Método**: GET
 - **URL**: `http://localhost:3000/api/tarefas`
-- **Descrição**: Retorna todas as tarefas cadastradas
-- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
+- **Descrição**: Retorna todas as tarefas do usuário autenticado
+- **Headers**:
+  - `Authorization: Bearer {token}`
 - **Parâmetros opcionais**:
   - `status` (query): Filtrar por status (pendente, em_andamento, concluida)
   - Exemplo: `http://localhost:3000/api/tarefas?status=pendente`
 
-#### 3. Obter Tarefa por ID
+#### 4. Obter Tarefa por ID
 - **Método**: GET
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
 - **Descrição**: Retorna uma tarefa específica pelo ID
-- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
+- **Headers**:
+  - `Authorization: Bearer {token}`
 - **Exemplo**: `http://localhost:3000/api/tarefas/550e8400-e29b-41d4-a716-446655440000`
 
-#### 4. Criar Nova Tarefa
+#### 5. Criar Nova Tarefa
 - **Método**: POST
 - **URL**: `http://localhost:3000/api/tarefas`
-- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Headers**: 
   - `Content-Type: application/json`
+  - `Authorization: Bearer {token}`
 - **Body** (raw JSON):
   ```json
   {
@@ -233,6 +350,7 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
     "message": "Tarefa criada com sucesso",
     "data": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
+      "user_id": "uuid...",
       "titulo": "Comprar mantimentos",
       "descricao": "Ir ao supermercado e comprar itens da lista",
       "status": "pendente",
@@ -243,12 +361,12 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
   }
   ```
 
-#### 5. Atualizar Tarefa Existente
+#### 6. Atualizar Tarefa Existente
 - **Método**: PUT
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
-- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
 - **Headers**: 
   - `Content-Type: application/json`
+  - `Authorization: Bearer {token}`
 - **Body** (raw JSON):
   ```json
   {
@@ -266,6 +384,7 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
     "message": "Tarefa atualizada com sucesso",
     "data": {
       "id": "550e8400-e29b-41d4-a716-446655440000",
+      "user_id": "uuid...",
       "titulo": "Comprar mantimentos - atualizado",
       "descricao": "Ir ao supermercado e comprar itens atualizados da lista",
       "status": "em_andamento",
@@ -277,10 +396,11 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
   }
   ```
 
-#### 6. Excluir Tarefa
+#### 7. Excluir Tarefa
 - **Método**: DELETE
 - **URL**: `http://localhost:3000/api/tarefas/{id}`
-- **Autenticacao**: Na aba Authorization: Type = Bearer Token / Token: cole aqui o token recebido
+- **Headers**:
+  - `Authorization: Bearer {token}`
 - **Descrição**: Remove uma tarefa específica pelo ID
 - **Resposta esperada** (status 200):
   ```json
@@ -294,41 +414,55 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 
 1. Inicie o servidor com `npm run dev`
 2. Execute a requisição #0 para verificar se a API está online
-3. Execute a requisição #1 para receber o Token da API
-3. Execute a requisição #4 para criar uma nova tarefa (guarde o ID retornado)
-4. Execute a requisição #2 para listar todas as tarefas e confirmar que sua tarefa foi criada
-5. Execute a requisição #3 com o ID da tarefa criada para obter detalhes específicos
-6. Execute a requisição #5 com o ID da tarefa para atualizá-la
-7. Execute novamente a requisição #3 para verificar se as atualizações foram aplicadas
-8. Execute a requisição #6 para excluir a tarefa
-9. Execute a requisição #2 para confirmar que a tarefa foi removida
+3. Execute a requisição #1 para cadastrar um novo usuário
+4. Execute a requisição #2 para fazer login e obter o token JWT
+5. Use o token obtido nas próximas requisições (adicione no cabeçalho Authorization)
+6. Execute a requisição #5 para criar uma nova tarefa (guarde o ID retornado)
+7. Execute a requisição #3 para listar todas as tarefas e confirmar que sua tarefa foi criada
+8. Execute a requisição #4 com o ID da tarefa criada para obter detalhes específicos
+9. Execute a requisição #6 com o ID da tarefa para atualizá-la
+10. Execute novamente a requisição #4 para verificar se as atualizações foram aplicadas
+11. Execute a requisição #7 para excluir a tarefa
+12. Execute a requisição #3 para confirmar que a tarefa foi removida
 
 ## Fluxo de Teste do Frontend
 
 1. Inicie o servidor backend com `npm run dev`
 2. Abra o arquivo `frontend/index.html` em um navegador
-3. Teste as funcionalidades:
+3. Teste as funcionalidades de autenticação:
+   - Cadastre um novo usuário preenchendo o formulário de cadastro
+   - Faça login com as credenciais criadas
+   - Verifique se o token é armazenado e o usuário é redirecionado
+4. Teste as funcionalidades de tarefas:
    - Crie uma nova tarefa preenchendo o formulário e clicando em "Salvar"
    - Verifique se a tarefa aparece na lista
    - Filtre as tarefas por status usando os botões de filtro
    - Edite uma tarefa clicando no botão "Editar", modificando os campos e salvando
    - Exclua uma tarefa clicando no botão "Excluir" e confirmando a ação
+5. Teste o logout:
+   - Clique no botão de logout
+   - Verifique se o token é removido e o usuário é redirecionado para a tela de login
 
 ## Possíveis Melhorias
 
 ### Backend
-- Implementar autenticação de usuários
+- Implementar refresh tokens para maior segurança
 - Adicionar paginação para listar tarefas
 - Implementar busca por texto nas tarefas
 - Adicionar testes automatizados
+- Implementar rate limiting para prevenir ataques
+- Adicionar logs de auditoria
+- Implementar recuperação de senha
 
 ### Frontend
 - Adicionar paginação para lidar com muitas tarefas
-- Implementar sistema de login/autenticação
+- Implementar sistema de recuperação de senha
 - Adicionar campo de busca para encontrar tarefas específicas
 - Permitir ordenação das tarefas por diferentes critérios
 - Melhorar responsividade para dispositivos móveis
 - Adicionar animações e transições para melhorar UX
+- Implementar notificações push para tarefas próximas ao vencimento
+- Adicionar modo escuro/claro
 
 ## Estrutura do Projeto
 
@@ -338,12 +472,19 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 │   ├── config/
 │   │   └── supabase.js
 │   ├── controllers/
+│   │   ├── authController.js
 │   │   └── tarefaController.js
+│   ├── middlewares/
+│   │   └── authMiddleware.js
 │   ├── models/
+│   │   ├── authModel.js
 │   │   └── tarefaModel.js
 │   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── tarefaRoutes.js
 │   │   └── index.js
 │   ├── validations/
+│   │   ├── authValidation.js
 │   │   └── tarefaValidation.js
 │   └── server.js
 ├── frontend/
@@ -360,17 +501,53 @@ Código JavaScript para gerenciar a comunicação com a API e manipulação da i
 
 ## Solução de Problemas Comuns
 
-### CORS não configurado
+### Problemas de Autenticação
+
+#### Token expirado
+- Tokens JWT têm prazo de validade. Implemente refresh tokens ou faça login novamente.
+
+#### Usuário não confirmado
+- Verifique se a confirmação de e-mail está desabilitada no desenvolvimento.
+- Em produção, implemente fluxo de confirmação de e-mail.
+
+#### Erro 401 Unauthorized
+- Verifique se o token está sendo enviado corretamente no cabeçalho Authorization.
+- Confirme se o formato é: `Bearer <token>`.
+
+### Problemas Gerais
+
+#### CORS não configurado
 Se você encontrar erros relacionados ao CORS ao tentar acessar a API pelo frontend, certifique-se de ter configurado corretamente o middleware CORS no backend.
 
-### API não responde
+#### API não responde
 Verifique se o servidor está em execução e se a porta configurada no frontend (`app.js`) corresponde à porta onde o servidor está escutando.
 
-### Formulário não envia
-Verifique os logs do console do navegador para identificar possíveis erros. Certifique-se de que todos os campos obrigatórios estão preenchidos.
+#### Formulário não envia
+Verifique os logs do console do navegador para identificar possíveis erros. Certifique-se de que todos os campos obrigatórios estão preenchidos e que o usuário está autenticado.
 
-### Dados não são exibidos
-Confirme se a URL da API está correta no arquivo `app.js` e se o formato dos dados retornados pela API corresponde ao esperado pelo frontend.
+#### Dados não são exibidos
+Confirme se a URL da API está correta no arquivo `app.js`, se o token de autenticação está sendo enviado e se o formato dos dados retornados pela API corresponde ao esperado pelo frontend.
+
+#### Problemas com RLS (Row Level Security)
+Se as tarefas não estão sendo filtradas corretamente por usuário, verifique se as políticas RLS estão configuradas corretamente no Supabase.
+
+## Segurança
+
+### Melhores Práticas Implementadas
+
+- **Autenticação JWT**: Tokens seguros para autenticação de usuários
+- **Row Level Security (RLS)**: Isolamento de dados por usuário no banco
+- **Validação de entrada**: Joi para validação de dados
+- **CORS configurado**: Controle de acesso entre origens
+- **Senhas criptografadas**: Gerenciadas pelo Supabase Auth
+
+### Recomendações Adicionais
+
+- Use HTTPS em produção
+- Implemente rate limiting
+- Configure logs de auditoria
+- Mantenha dependências atualizadas
+- Use variáveis de ambiente para dados sensíveis
 
 ## Licença
 
