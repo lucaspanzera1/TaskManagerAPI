@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gerenciador de Tarefas</title>
     <link rel="stylesheet" href="css/styles.css">
-      <script>
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = 'auth.html';
-    }
-  </script>
 </head>
 <body>
     <div class="container">
         <header>
             <h1><i class="fas fa-tasks"></i> Gerenciador de Tarefas</h1>
+            <button id="logout-btn" class="logout-button">
+    <i class="fas fa-sign-out-alt"></i> Sair
+</button>
         </header>
 
         <div class="app-content">

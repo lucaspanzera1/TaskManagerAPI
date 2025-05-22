@@ -15,56 +15,40 @@ const saveBtn = document.getElementById('save-btn');
 const cancelBtn = document.getElementById('cancel-btn');
 const newTaskBtn = document.getElementById('new-task-btn');
 const filterBtns = document.querySelectorAll('.filter-btn');
-// No início do app.js
+
+// Verificação de autenticação no início do app.js
 const token = localStorage.getItem('token');
 if (!token) {
   window.location.href = 'auth.html';
 }
 
-// Reforçar checagem no loadTasks ou outra função
-fetch(API_URL, {
-  headers: {
-    Authorization: `Bearer ${token}`
-  }
-})
-.then(res => {
-  if (res.status === 401) {
-    localStorage.removeItem('token');
-    window.location.href = 'auth.html';
-  }
-});
-
-
-async function loadTasks() {
-  try {
-    showLoading(true);
-
-    const response = await fetch(API_URL, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
-
-    if (!response.ok) {
-      if (response.status === 401) {
-        alert('Sessão expirada. Faça login novamente.');
+const logoutBtn = document.getElementById('logout-btn');
+if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
         window.location.href = 'auth.html';
-      }
-      throw new Error('Erro ao carregar tarefas');
-    }
-
-    const data = await response.json();
-    tasks = data.data || [];
-    renderTasks(tasks);
-  } catch (error) {
-    console.error('Erro:', error);
-    showError(error.message);
-  } finally {
-    showLoading(false);
-  }
+    });
 }
 
+// Função auxiliar para criar headers com autenticação
+function getAuthHeaders(includeContentType = false) {
+    const headers = {
+        'Authorization': `Bearer ${token}`
+    };
+    
+    if (includeContentType) {
+        headers['Content-Type'] = 'application/json';
+    }
+    
+    return headers;
+}
+
+// Função auxiliar para tratar respostas não autorizadas
+function handleUnauthorized() {
+    alert('Sessão expirada. Faça login novamente.');
+    localStorage.removeItem('token');
+    window.location.href = 'auth.html';
+}
 
 // Estado da aplicação
 let currentFilter = 'todos';
@@ -103,21 +87,21 @@ function setupEventListeners() {
 async function loadTasks() {
     try {
         showLoading(true);
-        
-        const response = await fetch(API_URL);
-        
+
+        const response = await fetch(API_URL, {
+            headers: getAuthHeaders()
+        });
+
         if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
+            }
             throw new Error('Erro ao carregar tarefas');
         }
-        
+
         const data = await response.json();
-        
-        if (!data || !data.data || !Array.isArray(data.data)) {
-            showEmptyState();
-            return;
-        }
-        
-        tasks = data.data;
+        tasks = data.data || [];
         renderTasks(tasks);
     } catch (error) {
         console.error('Erro:', error);
@@ -353,12 +337,14 @@ async function deleteTask(id) {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-            }
+            headers: getAuthHeaders()
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
+            }
             throw new Error('Erro ao excluir tarefa');
         }
         
@@ -419,13 +405,15 @@ async function createTask(taskData) {
     try {
         const response = await fetch(API_URL, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(true),
             body: JSON.stringify(taskData)
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
+            }
             throw new Error('Erro ao criar tarefa');
         }
         
@@ -459,13 +447,15 @@ async function updateTask(id, taskData) {
     try {
         const response = await fetch(`${API_URL}/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: getAuthHeaders(true),
             body: JSON.stringify(taskData)
         });
         
         if (!response.ok) {
+            if (response.status === 401) {
+                handleUnauthorized();
+                return;
+            }
             throw new Error('Erro ao atualizar tarefa');
         }
         
@@ -634,4 +624,3 @@ styleElement.textContent = `
         50% { background-color: rgba(67, 97, 238, 0.1); }
     }
 `;
-document.head.appendChild(styleElement);
