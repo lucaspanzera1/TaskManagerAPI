@@ -1,4 +1,9 @@
-const API_URL = 'http://localhost:3000/api';
+// Configuração da API
+const baseUrl = window.location.origin.includes('localhost')
+  ? 'http://localhost:3000/api'
+  : 'https://taskmanagerapi-production-ad12.up.railway.app/api';
+
+const API_URL = `${baseUrl}/tarefas`;
 
 document.getElementById('login-tab').addEventListener('click', () => switchTab('login'));
 document.getElementById('register-tab').addEventListener('click', () => switchTab('register'));

@@ -1,7 +1,7 @@
 // Configuração da API
 const baseUrl = window.location.origin.includes('localhost')
   ? 'http://localhost:3000/api'
-  : '/api';
+  : 'https://taskmanagerapi-production-ad12.up.railway.app/api';
 
 const API_URL = `${baseUrl}/tarefas`;
 
