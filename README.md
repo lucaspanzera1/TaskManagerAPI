@@ -2,6 +2,10 @@
 
 API RESTful para gerenciamento de tarefas construída com Node.js e Supabase, incluindo sistema completo de autenticação.
 
+## 🌐 URL da API em Produção
+
+**Base URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/`
+
 ## Tecnologias
 
 - Node.js
@@ -10,6 +14,7 @@ API RESTful para gerenciamento de tarefas construída com Node.js e Supabase, in
 - Joi (Validação)
 - Dotenv (Variáveis de ambiente)
 - Frontend HTML/CSS/JavaScript vanilla
+- Railway (Deploy)
 
 ## Configuração do Backend
 
@@ -168,22 +173,9 @@ Todas as rotas de tarefas (`/api/tarefas`) são protegidas pelo middleware `auth
 - Retorna erro `401 Unauthorized` se o token for inválido
 - Permite acesso apenas às tarefas do usuário autenticado
 
-## Configuração do Frontend
+## 🖥️ Configuração do Frontend
 
 ### 1. Estrutura de Arquivos
-
-Crie a seguinte estrutura de pastas dentro do projeto:
-
-```
-frontend/
-├── css/
-│   └── style.css
-├── js/
-│   └── app.js
-└── index.html
-```
-
-### 2. Estrutura Atualizada com Autenticação
 
 Crie a seguinte estrutura de pastas dentro do projeto:
 
@@ -194,12 +186,22 @@ frontend/
 ├── js/
 │   └── app.js
 ├── index.html     ← Página principal (protegida)
-└── auth.html      ← Nova página de login/registro
+└── auth.html      ← Página de login/registro
+```
+
+### 2. Configuração da URL da API
+
+No arquivo `frontend/js/app.js`, certifique-se de configurar a URL correta da API:
+
+```javascript
+// URL da API em produção
+const API_BASE_URL = 'https://taskmanagerapi-production-ad12.up.railway.app/api';
+
+// Para desenvolvimento local, use:
+// const API_BASE_URL = 'http://localhost:3000/api';
 ```
 
 ### 3. Implementação dos Arquivos
-
-Copie o código de cada arquivo conforme especificado abaixo:
 
 #### auth.html
 Nova página que contém duas abas:
@@ -233,14 +235,14 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 ### 4. Executando o Frontend
 
-1. Certifique-se de que o backend esteja rodando
+1. Certifique-se de que a API esteja rodando (produção: já está online)
 2. Abra o arquivo `auth.html` no navegador (página inicial de login)
    - Para desenvolvimento, recomenda-se usar o Live Server do VSCode ou similar
 3. Após autenticação bem-sucedida, o usuário será redirecionado automaticamente para `index.html`
 
 **⚠️ Importante**: Agora `index.html` está protegido por autenticação. Usuários não autenticados serão automaticamente redirecionados para `auth.html`.
 
-## Funcionalidades do Frontend
+## 🔗 Funcionalidades do Frontend
 
 ### 1. Sistema de Autenticação Completo
 - **Página `auth.html`** com duas abas:
@@ -276,7 +278,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 - Remove a tarefa da visualização após confirmação
 - Feedback de sucesso/erro ao usuário
 
-## Testando a API com Postman
+## 📡 Testando a API com Postman
 
 ### Configuração do Postman
 
@@ -286,9 +288,11 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 ### Requisições para Teste
 
+**⚠️ Importante**: Use a URL de produção: `https://taskmanagerapi-production-ad12.up.railway.app/api/`
+
 #### 0. Verificar Status da API
 - **Método**: GET
-- **URL**: `http://localhost:3000/`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/`
 - **Descrição**: Verifica se a API está online
 - **Resposta esperada**:
   ```json
@@ -301,7 +305,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 #### 1. Cadastro de Usuário
 - **Método**: POST
-- **URL**: `http://localhost:3000/api/signup`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/signup`
 - **Descrição**: Cadastrar um novo usuário
 - **Headers**: 
   - `Content-Type: application/json`
@@ -328,7 +332,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 #### 2. Login de Usuário
 - **Método**: POST
-- **URL**: `http://localhost:3000/api/login`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/login`
 - **Descrição**: Realizar login e obter token JWT
 - **Headers**: 
   - `Content-Type: application/json`
@@ -353,25 +357,25 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 #### 3. Listar Todas as Tarefas
 - **Método**: GET
-- **URL**: `http://localhost:3000/api/tarefas`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas`
 - **Descrição**: Retorna todas as tarefas do usuário autenticado
 - **Headers**:
   - `Authorization: Bearer {token}`
 - **Parâmetros opcionais**:
   - `status` (query): Filtrar por status (pendente, em_andamento, concluida)
-  - Exemplo: `http://localhost:3000/api/tarefas?status=pendente`
+  - Exemplo: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas?status=pendente`
 
 #### 4. Obter Tarefa por ID
 - **Método**: GET
-- **URL**: `http://localhost:3000/api/tarefas/{id}`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas/{id}`
 - **Descrição**: Retorna uma tarefa específica pelo ID
 - **Headers**:
   - `Authorization: Bearer {token}`
-- **Exemplo**: `http://localhost:3000/api/tarefas/550e8400-e29b-41d4-a716-446655440000`
+- **Exemplo**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas/550e8400-e29b-41d4-a716-446655440000`
 
 #### 5. Criar Nova Tarefa
 - **Método**: POST
-- **URL**: `http://localhost:3000/api/tarefas`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas`
 - **Headers**: 
   - `Content-Type: application/json`
   - `Authorization: Bearer {token}`
@@ -405,7 +409,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 #### 6. Atualizar Tarefa Existente
 - **Método**: PUT
-- **URL**: `http://localhost:3000/api/tarefas/{id}`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas/{id}`
 - **Headers**: 
   - `Content-Type: application/json`
   - `Authorization: Bearer {token}`
@@ -440,7 +444,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 #### 7. Excluir Tarefa
 - **Método**: DELETE
-- **URL**: `http://localhost:3000/api/tarefas/{id}`
+- **URL**: `https://taskmanagerapi-production-ad12.up.railway.app/api/tarefas/{id}`
 - **Headers**:
   - `Authorization: Bearer {token}`
 - **Descrição**: Remove uma tarefa específica pelo ID
@@ -454,40 +458,38 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 
 ### Fluxo de Teste Completo
 
-1. Inicie o servidor com `npm run dev`
-2. Execute a requisição #0 para verificar se a API está online
-3. Execute a requisição #1 para cadastrar um novo usuário
-4. Execute a requisição #2 para fazer login e obter o token JWT
-5. Use o token obtido nas próximas requisições (adicione no cabeçalho Authorization)
-6. Execute a requisição #5 para criar uma nova tarefa (guarde o ID retornado)
-7. Execute a requisição #3 para listar todas as tarefas e confirmar que sua tarefa foi criada
-8. Execute a requisição #4 com o ID da tarefa criada para obter detalhes específicos
-9. Execute a requisição #6 com o ID da tarefa para atualizá-la
-10. Execute novamente a requisição #4 para verificar se as atualizações foram aplicadas
-11. Execute a requisição #7 para excluir a tarefa
-12. Execute a requisição #3 para confirmar que a tarefa foi removida
+1. Execute a requisição #0 para verificar se a API está online
+2. Execute a requisição #1 para cadastrar um novo usuário
+3. Execute a requisição #2 para fazer login e obter o token JWT
+4. Use o token obtido nas próximas requisições (adicione no cabeçalho Authorization)
+5. Execute a requisição #5 para criar uma nova tarefa (guarde o ID retornado)
+6. Execute a requisição #3 para listar todas as tarefas e confirmar que sua tarefa foi criada
+7. Execute a requisição #4 com o ID da tarefa criada para obter detalhes específicos
+8. Execute a requisição #6 com o ID da tarefa para atualizá-la
+9. Execute novamente a requisição #4 para verificar se as atualizações foram aplicadas
+10. Execute a requisição #7 para excluir a tarefa
+11. Execute a requisição #3 para confirmar que a tarefa foi removida
 
-## Fluxo de Teste do Frontend
+## 🧪 Fluxo de Teste do Frontend
 
 ### 1. Primeiro Acesso (Usuário Novo)
-1. Inicie o servidor backend com `npm run dev`
-2. Abra o arquivo `frontend/auth.html` em um navegador
-3. **Teste de Proteção**: Tente acessar `index.html` diretamente - você será redirecionado para `auth.html`
+1. Abra o arquivo `frontend/auth.html` em um navegador
+2. **Teste de Proteção**: Tente acessar `index.html` diretamente - você será redirecionado para `auth.html`
 
 ### 2. Teste de Autenticação
-4. **Cadastro**:
+3. **Cadastro**:
    - Clique na aba "Registro"
    - Preencha username, email e password
    - Clique em "Cadastrar"
    - Verifique se o usuário é criado e redirecionado para login
    
-5. **Login**:
+4. **Login**:
    - Na aba "Login", insira username e password criados
    - Clique em "Entrar"
    - Verifique se o token é armazenado e o usuário é redirecionado para `index.html`
 
 ### 3. Teste de Funcionalidades de Tarefas
-6. Agora em `index.html` (autenticado):
+5. Agora em `index.html` (autenticado):
    - Crie uma nova tarefa preenchendo o formulário e clicando em "Salvar"
    - Verifique se a tarefa aparece na lista
    - Filtre as tarefas por status usando os botões de filtro
@@ -495,11 +497,11 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
    - Exclua uma tarefa clicando no botão "Excluir" e confirmando a ação
 
 ### 4. Teste de Segurança
-7. **Teste de Token Expirado**:
+6. **Teste de Token Expirado**:
    - Limpe o localStorage no navegador (F12 > Application > Local Storage)
    - Recarregue `index.html` - você será redirecionado para `auth.html`
    
-8. **Teste de Logout** (se implementado):
+7. **Teste de Logout** (se implementado):
    - Clique no botão de logout
    - Verifique se o token é removido e o usuário é redirecionado para `auth.html`
 
@@ -510,7 +512,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 - ✅ Tokens são gerenciados automaticamente
 - ✅ Redirecionamento automático funciona corretamente
 
-## Possíveis Melhorias
+## 💡 Possíveis Melhorias
 
 ### Backend
 - Implementar refresh tokens para maior segurança
@@ -534,7 +536,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 - Implementar notificações push para tarefas próximas ao vencimento
 - Adicionar modo escuro/claro
 
-## Estrutura do Projeto
+## 📁 Estrutura do Projeto
 
 ```
 .
@@ -559,9 +561,10 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 │   └── server.js
 ├── frontend/
 │   ├── css/
-│   │   └── style.css
+│   │   └── styles.css
 │   ├── js/
 │   │   └── app.js
+│   ├── auth.html
 │   └── index.html
 ├── .env
 ├── .env.example
@@ -569,7 +572,7 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 └── README.md
 ```
 
-## Solução de Problemas Comuns
+## 🔧 Solução de Problemas Comuns
 
 ### Problemas de Autenticação
 
@@ -599,13 +602,15 @@ Código JavaScript para gerenciar a comunicação com a API, autenticação e ma
 **Formulários de login/registro não funcionam**
 - Verifique os logs do console para erros JavaScript
 - Confirme se as URLs da API estão corretas no `app.js`
-- Teste se o backend de autenticação está rodando
+- Certifique-se de estar usando a URL de produção: `https://taskmanagerapi-production-ad12.up.railway.app/api`
 
 #### CORS não configurado
 Se você encontrar erros relacionados ao CORS ao tentar acessar a API pelo frontend, certifique-se de ter configurado corretamente o middleware CORS no backend.
 
 #### API não responde
-Verifique se o servidor está em execução e se a porta configurada no frontend (`app.js`) corresponde à porta onde o servidor está escutando.
+- Verifique se está usando a URL correta de produção
+- Confirme se a porta configurada no frontend (`app.js`) corresponde à URL de produção
+- Teste diretamente no navegador: `https://taskmanagerapi-production-ad12.up.railway.app/`
 
 #### Formulário não envia
 Verifique os logs do console do navegador para identificar possíveis erros. Certifique-se de que todos os campos obrigatórios estão preenchidos e que o usuário está autenticado.
@@ -616,7 +621,7 @@ Confirme se a URL da API está correta no arquivo `app.js`, se o token de autent
 #### Problemas com RLS (Row Level Security)
 Se as tarefas não estão sendo filtradas corretamente por usuário, verifique se as políticas RLS estão configuradas corretamente no Supabase.
 
-## Segurança
+## 🔒 Segurança
 
 ### Melhores Práticas Implementadas
 
@@ -625,15 +630,35 @@ Se as tarefas não estão sendo filtradas corretamente por usuário, verifique s
 - **Validação de entrada**: Joi para validação de dados
 - **CORS configurado**: Controle de acesso entre origens
 - **Senhas criptografadas**: Gerenciadas pelo Supabase Auth
+- **Deploy seguro**: API hospedada no Railway com HTTPS
 
 ### Recomendações Adicionais
 
-- Use HTTPS em produção
+- Use HTTPS em produção (✅ Já implementado)
 - Implemente rate limiting
 - Configure logs de auditoria
 - Mantenha dependências atualizadas
 - Use variáveis de ambiente para dados sensíveis
 
-## Licença
+## 🚀 Deploy
+
+### Produção
+A API está atualmente hospedada no Railway e pode ser acessada através da URL:
+`https://taskmanagerapi-production-ad12.up.railway.app/api/`
+
+### Desenvolvimento Local
+Para rodar localmente, use:
+```bash
+npm run dev
+```
+E configure o frontend para usar `http://localhost:3000/api` como base URL.
+
+## 📄 Licença
 
 MIT
+
+---
+
+**Desenvolvido por**: Lucas Panzera  
+**Repositório**: https://github.com/lucaspanzera1/TaskManagerAPI  
+**API Produção**: https://taskmanagerapi-production-ad12.up.railway.app/api/

@@ -1,5 +1,10 @@
 // Configuração da API
-const API_URL = 'http://localhost:3000/api/tarefas';
+const baseUrl = window.location.origin.includes('localhost')
+  ? 'http://localhost:3000/api'
+  : '/api';
+
+const API_URL = `${baseUrl}/tarefas`;
+
 
 // Elementos do DOM
 const tasksList = document.getElementById('tasks-list');
