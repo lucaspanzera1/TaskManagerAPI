@@ -3,44 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Autenticação</title>
+  <title>Autenticação - TaskManagerAPI</title>
   <link rel="stylesheet" href="css/auth.css" />
-  <style>
-    .tabs { display: flex; margin-bottom: 1rem; }
-    .tabs button { flex: 1; padding: 10px; cursor: pointer; }
-    .tabs button.active { font-weight: bold; background-color: #eee; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
-    form input, form button { display: block; width: 100%; margin: 0.5rem 0; }
-  </style>
   <link rel='shorcut icon' href="img/API.png" type="image/x-icon">
 </head>
 <body>
-  <div class="container">
-    <h1>Autenticação</h1>
-    
-    <div class="tabs">
-      <button id="login-tab" class="active">Login</button>
-      <button id="register-tab">Registrar</button>
-    </div>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="command-key">
+                    <svg fill="white" version="1.1" xmlns="http://www.w3.org/2000/svg" 
+                         width="28px" height="28px" viewBox="0 0 80 80">
+                        <g>
+                            <path d="M64,48L64,48h-8V32h8c8.836,0,16-7.164,16-16S72.836,0,64,0c-8.837,0-16,7.164-16,16v8H32v-8c0-8.836-7.164-16-16-16
+                                S0,7.164,0,16s7.164,16,16,16h8v16h-8l0,0l0,0C7.164,48,0,55.164,0,64s7.164,16,16,16c8.837,0,16-7.164,16-16l0,0v-8h16v7.98
+                                c0,0.008-0.001,0.014-0.001,0.02c0,8.836,7.164,16,16,16s16-7.164,16-16S72.836,48.002,64,48z M64,8c4.418,0,8,3.582,8,8
+                                s-3.582,8-8,8h-8v-8C56,11.582,59.582,8,64,8z M8,16c0-4.418,3.582-8,8-8s8,3.582,8,8v8h-8C11.582,24,8,20.417,8,16z M16,72
+                                c-4.418,0-8-3.582-8-8s3.582-8,8-8l0,0h8v8C24,68.418,20.418,72,16,72z M32,48V32h16v16H32z M64,72c-4.418,0-8-3.582-8-8l0,0v-8
+                                h7.999c4.418,0,8,3.582,8,8S68.418,72,64,72z"/>
+                        </g>
+                    </svg>
+                </div>
+                <h1>TaskManager API</h1>
+                <p>Acesse sua conta ou crie uma nova</p>
+            </div>
 
-    <div id="login-content" class="tab-content active">
-      <form id="login-form">
-        <input type="text" id="login-username" placeholder="Usuário" required />
-        <input type="password" id="login-password" placeholder="Senha" required />
-        <button type="submit">Entrar</button>
-      </form>
-    </div>
+            <div class="tabs">
+                <button id="login-tab" class="active">Login</button>
+                <button id="register-tab">Registrar</button>
+            </div>
 
-    <div id="register-content" class="tab-content">
-      <form id="register-form">
-        <input type="text" id="register-username" placeholder="Usuário" required />
-        <input type="email" id="register-email" placeholder="Email" required />
-        <input type="password" id="register-password" placeholder="Senha" required />
-        <button type="submit">Registrar</button>
-      </form>
+            <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
+
+            <div id="login-content" class="tab-content active">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">Usuário</label>
+                        <input type="text" id="login-username" placeholder="Digite seu usuário" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Senha</label>
+                        <input type="password" id="login-password" placeholder="Digite sua senha" required />
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Entrar</span>
+                    </button>
+                    <div class="forgot-password">
+                        <a href="#">Esqueceu sua senha?</a>
+                    </div>
+                </form>
+            </div>
+
+            <div id="register-content" class="tab-content">
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">Usuário</label>
+                        <input type="text" id="register-username" placeholder="Escolha um nome de usuário" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">Email</label>
+                        <input type="email" id="register-email" placeholder="Digite seu email" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">Senha</label>
+                        <input type="password" id="register-password" placeholder="Crie uma senha segura" required />
+                    </div>
+                    <button type="submit" class="submit-btn">
+                        <span class="btn-text">Criar Conta</span>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
 
   <script src="js/auth.js"></script>
 </body>
