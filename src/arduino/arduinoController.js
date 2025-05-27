@@ -1,7 +1,7 @@
 import { SerialPort } from 'serialport';
 
 const port = new SerialPort({
-  path: '/dev/tty.usbmodemFD1201', // Substitua por sua porta serial. Ex: COM4, /dev/ttyUSB0...
+  path: '/dev/tty.usbmodemFA1301', // Substitua por sua porta serial. Ex: COM4, /dev/ttyUSB0...
   baudRate: 9600,
   autoOpen: true
 });
@@ -14,14 +14,15 @@ port.on('error', (err) => {
   console.error('Erro na comunicação com o Arduino:', err.message);
 });
 
-export function acionarServo(valor) {
-  const comando = valor === 1 ? '1' : '0';
-  port.write(comando, (err) => {
+export function enviarComandoArduino(comando) {
+  const mensagem = `${comando}\n`; // <- isso é essencial!
+
+  port.write(mensagem, (err) => {
     if (err) {
-      return console.error('Erro ao enviar comando:', err.message);
+      console.error('Erro ao enviar comando:', err.message);
+    } else {
+      console.log(`Comando "${comando}" enviado ao Arduino.`);
     }
-    console.log(`Comando "${comando}" enviado para o Arduino.`);
   });
-
-
 }
+
