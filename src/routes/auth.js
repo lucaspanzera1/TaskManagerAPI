@@ -1,6 +1,8 @@
 import express from 'express';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
+import { setComando } from '../arduino/comando.js';
+
 
 dotenv.config();
 
@@ -35,7 +37,6 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  // Buscar email no Supabase pela tabela profiles
   const { data: profile, error: profileError } = await supabase
     .from('profiles')
     .select('email')
@@ -43,26 +44,27 @@ router.post('/login', async (req, res) => {
     .single();
 
   if (profileError || !profile) {
-    console.error('Erro ao buscar perfil:', profileError);
     return res.status(400).json({ error: 'Usuário não encontrado' });
   }
 
-  // Fazer login usando o e-mail recuperado
   const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
     email: profile.email,
     password
   });
 
   if (loginError) {
-    console.error('Erro ao fazer login:', loginError);
     return res.status(401).json({ error: 'Credenciais inválidas' });
   }
+
+  // ✅ Envia comando para Arduino
+  setComando('start_effect');
 
   res.json({
     token: loginData.session.access_token,
     user: loginData.user
   });
 });
+
 
 
 export default router;
