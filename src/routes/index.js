@@ -12,17 +12,21 @@ router.post('/tarefas', authMiddleware, TarefaController.createTarefa);
 router.put('/tarefas/:id', authMiddleware, TarefaController.updateTarefa);
 router.delete('/tarefas/:id', authMiddleware, TarefaController.deleteTarefa);
 
-router.post('/arduino/efeito', (req, res) => {
-  const { ligar } = req.body;
+let ultimoComando = null;
 
-  if (typeof ligar !== 'boolean') {
-    return res.status(400).json({ error: 'Campo "ligar" deve ser booleano.' });
-  }
+router.post('/arduino/comando', (req, res) => {
+  const { comando } = req.body;
+  if (!comando) return res.status(400).json({ error: 'Comando obrigatório.' });
 
-  const comando = ligar ? 'start_effect' : 'stop_effect';
-  enviarComandoArduino(comando);
-
-  res.json({ status: `Efeito ${ligar ? 'iniciado' : 'parado'}` });
+  ultimoComando = comando;
+  console.log('Comando recebido para o Arduino:', comando);
+  res.json({ status: 'Comando registrado.' });
 });
+
+router.get('/arduino/comando', (req, res) => {
+  res.json({ comando: ultimoComando });
+  ultimoComando = null; // limpa após envio
+});
+
 
 export default router;

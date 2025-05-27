@@ -1,7 +1,7 @@
 import { SerialPort } from 'serialport';
 
 const port = new SerialPort({
-  path: '/dev/tty.usbmodemFA1301', // Substitua por sua porta serial. Ex: COM4, /dev/ttyUSB0...
+  path: '/dev/tty.usbmodemFD1201', // Substitua por sua porta serial. Ex: COM4, /dev/ttyUSB0...
   baudRate: 9600,
   autoOpen: true
 });
