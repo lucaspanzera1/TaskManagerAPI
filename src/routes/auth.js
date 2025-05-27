@@ -57,7 +57,7 @@ router.post('/login', async (req, res) => {
   }
 
   // ✅ Envia comando para Arduino
-  setComando('start_effect');
+  setComando('on');
 
   res.json({
     token: loginData.session.access_token,
