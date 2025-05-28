@@ -1,6 +1,8 @@
-# API de Gerenciamento de Tarefas
-
+# TaskManagerAPI 📝
+![License](https://img.shields.io/badge/lucaspanzera-TaskManagerAPI-purple) ![Badge em Desenvolvimento](https://img.shields.io/badge/Status-Desenvolendo-purple)</br>
 API RESTful para gerenciamento de tarefas construída com Node.js e Supabase, incluindo sistema completo de autenticação.
+
+![TaskManagerAPI](frontend/img/header.png)
 
 ## 🌐 URL da API em Produção
 
