@@ -3,24 +3,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById('logout-btn');
   const token = localStorage.getItem('token');
 
-  // Redirecionamento do botão "Get Started"
+  // Botão Get Started
   if (getStartedBtn) {
+    if (token) {
+      getStartedBtn.textContent = 'Ir para o app';
+    } else {
+      getStartedBtn.textContent = 'Começar agora';
+    }
+
     getStartedBtn.addEventListener('click', () => {
       if (token) {
-        window.location.href = 'index.html';
+        window.location.href = '/app';
       } else {
-        window.location.href = 'auth.html';
+        window.location.href = '/login';
       }
     });
   }
 
-  // Lógica do botão "Sair"
+  // Botão Logout
   if (logoutBtn) {
     if (!token) {
-      // Oculta botão se não estiver logado
-      logoutBtn.style.display = 'none';
+      logoutBtn.classList.add('hidden');
     } else {
-      // Mostra e ativa logout se estiver logado
+      logoutBtn.classList.remove('hidden');
       logoutBtn.addEventListener('click', () => {
         localStorage.removeItem('token');
         window.location.href = 'docs.html';
@@ -28,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
 
 
         // Theme Toggle

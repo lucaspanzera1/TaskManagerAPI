@@ -52,7 +52,7 @@ document.getElementById('login-form').addEventListener('submit', async (e) => {
   const data = await res.json();
   if (res.ok && data.token) {
     localStorage.setItem('token', data.token);
-    window.location.href = 'index.html';
+    window.location.href = '/app';
   } else {
     alert(data.error || 'Erro ao fazer login');
   }

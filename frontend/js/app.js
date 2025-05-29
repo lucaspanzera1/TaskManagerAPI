@@ -23,7 +23,7 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 
 const token = localStorage.getItem('token');
 
-// Se estiver na página do app e não tiver token, redireciona para login
+
 if (!token && window.location.pathname === '/app') {
   window.location.replace('/login');
 }
@@ -54,7 +54,7 @@ function getAuthHeaders(includeContentType = false) {
 function handleUnauthorized() {
     alert('Sessão expirada. Faça login novamente.');
     localStorage.removeItem('token');
-    window.location.href = 'auth.html';
+    window.location.href = '/login';
 }
 
 // Estado da aplicação
