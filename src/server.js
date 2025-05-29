@@ -22,7 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Servir arquivos estáticos do frontend
-app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend'), { index: false }));
+
 
 // Rotas da API
 app.use('/api', routes);
@@ -31,25 +32,33 @@ app.use('/api', authRoutes);
 // Rota base da API
 app.get('/api', (req, res) => {
   res.json({
-    message: 'API de Gerenciamento de Tarefas',
-    versao: '1.0.0',
+    message: 'API TaskManager',
+    versao: 'Beta',
     status: 'online'
   });
 });
 
-// Fallback: redirecionar qualquer rota não API para o frontend (SPA friendly)
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
+// Rota da documentação pública
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/docs.html'));
+});
+
+// Página de login
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/auth.html'));
+});
+
+// Página principal do app
+app.get('/app', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
-// Middleware para tratar rotas não encontradas
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Rota não encontrada'
-  });
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.status(404).sendFile(path.join(__dirname, '../frontend/404.html'));
 });
+
+
 
 // Inicialização do servidor
 app.listen(PORT, () => {

@@ -21,19 +21,21 @@ const cancelBtn = document.getElementById('cancel-btn');
 const newTaskBtn = document.getElementById('new-task-btn');
 const filterBtns = document.querySelectorAll('.filter-btn');
 
-// Verificação de autenticação no início do app.js
 const token = localStorage.getItem('token');
-if (!token) {
-  window.location.href = 'auth.html';
+
+// Se estiver na página do app e não tiver token, redireciona para login
+if (!token && window.location.pathname === '/app') {
+  window.location.replace('/login');
 }
 
 const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
-    logoutBtn.addEventListener('click', () => {
-        localStorage.removeItem('token');
-        window.location.href = 'auth.html';
-    });
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('token');
+    window.location.href = '/login';
+  });
 }
+
 
 // Função auxiliar para criar headers com autenticação
 function getAuthHeaders(includeContentType = false) {
