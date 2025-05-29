@@ -2,21 +2,23 @@ import supabase from '../config/supabase.js';
 
 const TABLE_NAME = 'tarefas';
 
-export async function getAllTarefas() {
+export async function getAllTarefasByUser(userId) {
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select('*')
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
   return data;
 }
 
-export async function getTarefaById(id) {
+export async function getTarefaById(id, userId) {
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select('*')
     .eq('id', id)
+    .eq('user_id', userId)
     .single();
 
   if (error) throw error;
@@ -54,11 +56,12 @@ export async function deleteTarefa(id) {
   return true;
 }
 
-export async function getTarefasByStatus(status) {
+export async function getTarefasByStatusAndUser(status, userId) {
   const { data, error } = await supabase
     .from(TABLE_NAME)
     .select('*')
     .eq('status', status)
+    .eq('user_id', userId)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
