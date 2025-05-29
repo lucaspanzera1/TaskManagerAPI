@@ -43,6 +43,10 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/docs.html'));
 });
 
+app.get('/docs', (req, res) => {
+  res.sendFile(path.join(__dirname, '../frontend/docs.html'));
+});
+
 // Página de login
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, '../frontend/auth.html'));
